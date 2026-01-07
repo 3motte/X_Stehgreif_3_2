@@ -1,0 +1,95 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
+/**
+ * Repräsentiert die Sonne (oder bei ausgeschaltetem Licht den Mond)
+ * in der Szene. Zusätzlich steuert diese Klasse den Tag-/Nacht-Zustand.
+ */
+public class Sonne {
+
+	// Position und Größe der Sonne (oder des Mondes)
+	private int hoehe;
+	private int breite;
+	private int posX;
+	private int posY;
+
+	/**
+	 * Interner Zustand: true = Licht aus (Nacht), false = Licht an (Tag).
+	 * Der Name ist bewusst invers formuliert: "sonneLichtAnAus" bedeutet,
+	 * dass die Sonne ausgeblendet ist, wenn der Wert true ist.
+	 */
+	private boolean sonneLichtAnAus;
+
+	// Standardfarbe der Sonne (Tag)
+	private Color sonnenFarbe;
+
+	/**
+	 * Konstruktor.
+	 *
+	 * @param posX  x-Koordinate der oberen linken Ecke der Sonne
+	 * @param posY  y-Koordinate der oberen linken Ecke der Sonne
+	 * @param hoehe Höhe der Sonne
+	 * @param breite Breite der Sonne
+	 */
+	public Sonne(int posX, int posY, int hoehe, int breite) {
+		this.hoehe = hoehe;
+		this.breite = breite;
+		this.posX = posX;
+		this.posY = posY;
+		this.sonnenFarbe = new Color(243, 159, 24);
+	}
+
+	/**
+	 * Gibt zurück, ob gerade Nacht ist.
+	 *
+	 * @return true, wenn Nacht (Sonne ausgeblendet)
+	 */
+	public boolean istNacht() {
+		return sonneLichtAnAus;
+	}
+
+	/**
+	 * Gibt zurück, ob gerade Tag ist.
+	 *
+	 * @return true, wenn Tag (Sonne sichtbar)
+	 */
+	public boolean istTag() {
+		return !sonneLichtAnAus;
+	}
+
+	/**
+	 * Schaltet den Tag/Nacht-Zustand um, wenn die übergebenen Koordinaten
+	 * innerhalb des Sonnenbereichs liegen.
+	 *
+	 * @param posX x-Koordinate (z. B. Maus-Klick)
+	 * @param posY y-Koordinate (z. B. Maus-Klick)
+	 * @return true, wenn der Zustand umgeschaltet wurde
+	 */
+	public boolean lichtUmschalterSonne(int posX, int posY) {
+		if (posX >= this.posX && posX <= this.posX + this.breite &&
+			posY >= this.posY && posY <= this.posY + this.hoehe) {
+			sonneLichtAnAus = !sonneLichtAnAus;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Zeichnet die Sonne (oder den Mond) auf dem Graphics-Kontext. Die Farbe
+	 * wechselt je nach Tag-/Nacht-Zustand.
+	 *
+	 * @param g Graphics-Kontext
+	 */
+	public void draw(Graphics g) {
+		// Farbe wählen: bei Nacht zeichnen wir einen hellen Kreis (Mond),
+		// bei Tag die orangefarbene Sonne.
+		if (sonneLichtAnAus) {
+			g.setColor(Color.WHITE);
+		} else {
+			g.setColor(sonnenFarbe);
+		}
+		g.fillOval(posX, posY, breite, hoehe);
+	}
+}
+
