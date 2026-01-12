@@ -61,18 +61,43 @@ public class Sonne {
 	 * Schaltet den Tag/Nacht-Zustand um, wenn die übergebenen Koordinaten
 	 * innerhalb des Sonnenbereichs liegen.
 	 *
+	 * Hinweis: Die ursprüngliche Implementierung prüfte ein umgebendes
+	 * Rechteck. Diese Klasse bietet nun eine kreisförmige Trefferprüfung
+	 * (mittels `containsPoint`) und eine explizite `toggle()`-Methode, so
+	 * dass Aufrufer zunächst den aktuellen Zustand über die Getter
+	 * (`istTag`/`istNacht`) abfragen können und anschließend indirekt
+	 * das Umschalten steuern.
+	 *
 	 * @param posX x-Koordinate (z. B. Maus-Klick)
 	 * @param posY y-Koordinate (z. B. Maus-Klick)
-	 * @return true, wenn der Zustand umgeschaltet wurde
+	 * @return true, wenn der Klick innerhalb des Sonnenbereichs lag
 	 */
 	public boolean lichtUmschalterSonne(int posX, int posY) {
-		if (posX >= this.posX && posX <= this.posX + this.breite &&
-			posY >= this.posY && posY <= this.posY + this.hoehe) {
-			sonneLichtAnAus = !sonneLichtAnAus;
-			return true;
-		} else {
-			return false;
-		}
+		return containsPoint(posX, posY);
+	}
+
+	/**
+	 * Prüft, ob die gegebene Punktkoordinate innerhalb des kreisförmigen
+	 * Sonnenbereichs liegt.
+	 *
+	 * @param x x-Koordinate
+	 * @param y y-Koordinate
+	 * @return true, wenn Punkt im Kreis liegt
+	 */
+	public boolean containsPoint(int x, int y) {
+		int centerX = this.posX + this.breite / 2;
+		int centerY = this.posY + this.hoehe / 2;
+		int radius = Math.min(this.breite, this.hoehe) / 2;
+		int dx = x - centerX;
+		int dy = y - centerY;
+		return dx * dx + dy * dy <= radius * radius;
+	}
+
+	/**
+	 * Schaltet den internen Tag/Nacht-Zustand um (toggle).
+	 */
+	public void toggle() {
+		this.sonneLichtAnAus = !this.sonneLichtAnAus;
 	}
 
 	/**

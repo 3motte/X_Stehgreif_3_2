@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"Alle Klassen und Schnittstellen","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"Hogsmeade"}];updateSearchResults();
+typeSearchIndex = [{"l":"Alle Klassen und Schnittstellen","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"Baum"},{"p":"<Unnamed>","l":"Haus"},{"p":"<Unnamed>","l":"Hogsmeade"},{"p":"<Unnamed>","l":"HogsmeadeApp"},{"p":"<Unnamed>","l":"Sonne"},{"p":"<Unnamed>","l":"Strasse"}];updateSearchResults();
