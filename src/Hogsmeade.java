@@ -1,48 +1,68 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * Basis-Panel stellt Grundfunktionen fuer den Aufbau interaktiver Anwendungen
- * zur
- * Verfuegung.
+ * zur Verfuegung.
  * 
  * Alle Mausereignisse koennen in einzelnen Methoden verarbeitet werden.
+ * Die Besen werden animiert durch einen Timer.
  * 
  * @author Joerg Berdux
- * @version 1.0
+ * @version 1.1
  */
 public class Hogsmeade extends JPanel implements MouseListener {
 
 	/** Sammlung der Häuser, die in der Szene gezeichnet werden. */
 	public Haus[] haeuser;
+
 	/** Die Straße im Vordergrund (oder Mittelgrund) der Szene. */
 	public Strasse strasse_1;
+
 	/** Die Sonne; steuert außerdem Tag-/Nacht-Zustand. */
 	public Sonne sonne_1;
+
 	/** Sammlung der Bäume in der Szene. */
 	public Baum[] baeume;
+
+	/** Sammlung der stehenden Besen in der Szene. */
+	public BesenStehend[] besenStehend;
+
+	/** Sammlung der fliegenden Besen in der Szene. */
+	public BesenFliegendmitAni[] besenFliegend;
+
+	/** Timer für die Animation der fliegenden Besen */
+	private Timer animationTimer;
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Initialisierung des Panels und setzen des MouseListerns
-	 * fuer die Verwendung von Maus-Ereignissen
+	 * fuer die Verwendung von Maus-Ereignissen sowie Starten der Animation.
 	 */
 	public Hogsmeade() {
 
 		/*
 		 * registriert Panel als MouseListener, so dass die jeweilige spezialisierte
 		 * Methode aufgerufen wird, wenn ein Mausereignis innerhalb des Panels
-		 * ausgeloest
-		 * wird
+		 * ausgeloest wird
 		 */
 		this.addMouseListener(this);
 
 		// Initialisiere Häuser, Bäume, Sonne und Straße mit sinnvollen Startwerten
+
+		// BesenStehend: (größe, posX, posY) - in Array speichern
+		besenStehend = new BesenStehend[3];
+		besenStehend[0] = new BesenStehend(50, 80, 470);
+		besenStehend[1] = new BesenStehend(50, 330, 470);
+		besenStehend[2] = new BesenStehend(50, 720, 470);
 
 		haeuser = new Haus[5];
 		haeuser[0] = new Haus(35, 575, 150, 240, new Color(123, 3, 35));
@@ -62,6 +82,53 @@ public class Hogsmeade extends JPanel implements MouseListener {
 		baeume[1] = new Baum(80, 1000, 410);
 		baeume[2] = new Baum(110, 516, 350);
 
+		// BesenFliegend: (größe, posX, posY) - in Array speichern
+		besenFliegend = new BesenFliegendmitAni[2];
+		besenFliegend[0] = new BesenFliegendmitAni(50, 300, 200);
+		besenFliegend[1] = new BesenFliegendmitAni(50, 600, 150);
+
+		// Geschwindigkeiten für die Besen setzen
+		besenFliegend[0].setGeschwindigkeit(3, 0); // Schneller, horizontal
+		besenFliegend[1].setGeschwindigkeit(2, 0); // Langsamer, horizontal
+
+		// Bildschirmgröße setzen
+		besenFliegend[0].setBildschirmGroesse(1110, 670);
+		besenFliegend[1].setBildschirmGroesse(1110, 670);
+
+		// Optional: Wellenbewegung aktivieren
+		besenFliegend[0].setStartY(200);
+		besenFliegend[1].setStartY(150);
+
+		// Timer für Animation starten (30 FPS = ca. 33ms pro Frame)
+		animationTimer = new Timer(33, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				animiereBesen();
+				repaint();
+			}
+		});
+		animationTimer.start();
+	}
+
+	/**
+	 * Animiert alle fliegenden Besen.
+	 * <p>
+	 * Diese Methode wird vom Timer regelmäßig aufgerufen und
+	 * bewegt alle Besen entsprechend ihrer Geschwindigkeit.
+	 * </p>
+	 */
+	private void animiereBesen() {
+		if (besenFliegend != null) {
+			for (BesenFliegendmitAni bf : besenFliegend) {
+				if (bf != null) {
+					// Option 1: Gerade Bewegung
+					bf.bewegen();
+
+					// Option 2: Wellenbewegung (auskommentiert)
+					// bf.bewegenWelle(30, 0.05);
+				}
+			}
+		}
 	}
 
 	/**
@@ -93,6 +160,22 @@ public class Hogsmeade extends JPanel implements MouseListener {
 		strasse_1.draw(g);
 		// Zeichnet die Sonne ein
 		sonne_1.draw(g);
+
+		// Zeichnet die fliegenden Besen ein
+		if (besenFliegend != null) {
+			for (BesenFliegendmitAni bf : besenFliegend) {
+				if (bf != null)
+					bf.draw(g);
+			}
+		}
+
+		// Zeichnet die stehenden Besen ein
+		if (besenStehend != null) {
+			for (BesenStehend bs : besenStehend) {
+				if (bs != null)
+					bs.draw(g);
+			}
+		}
 
 		// Zeichnet die Bäume aus dem Array ein
 		if (baeume != null) {
